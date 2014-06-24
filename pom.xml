@@ -9,8 +9,16 @@
   <url>http://maven.apache.org</url>
   
   <properties>
-      <spring.version>4.0.1.RELEASE</spring.version>
+    <spring.version>4.0.1.RELEASE</spring.version>
   </properties>
+  
+  <repositories>
+  <repository>  
+    <id>CUBRID</id>
+    <name>CUBRID-releases</name>
+    <url>http://maven.cubrid.org</url>
+  </repository>
+  </repositories>
   
   <dependencies>
   <dependency>
@@ -68,6 +76,12 @@
     <groupId>commons-logging</groupId>  
     <artifactId>commons-logging</artifactId>  
     <version>1.1.1</version>  
+  </dependency>
+  
+  <dependency>
+    <groupId>cubrid</groupId>
+    <artifactId>cubrid-jdbc</artifactId>
+    <version>8.4.3.1005</version>
   </dependency>
   </dependencies>
     
