@@ -25,7 +25,6 @@ public class GuestBookController {
 		JSONObject jsonResult = JSONObject.fromObject(result);
 		req.setAttribute("output", jsonResult);
 		res.setContentType("application/json; charset=UTF-8");
-		res.setCharacterEncoding("UTF-8");
 		try {
 			res.getWriter().write(jsonResult.toString());
 			res.flushBuffer();

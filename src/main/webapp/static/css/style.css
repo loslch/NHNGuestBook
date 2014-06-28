@@ -1,0 +1,27 @@
+body {
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.article-author {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.article-time {
+    font-size: 11px;
+    color: #636363;
+    font-style: italic;
+}
+
+.article-body {
+    padding: 5px 0;
+    margin: 0 0 5px;
+    text-align: left;
+    word-wrap:break-word;
+    line-height: 1.7em;
+    font-family: Arial;
+    font-size: 13px;
+    color: #666;
+}
