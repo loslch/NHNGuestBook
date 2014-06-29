@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +86,12 @@ public class ArticleController {
 	@RequestMapping(method=RequestMethod.POST)
 	public @ResponseBody ResponseMessage postArticle(@RequestBody final Article article) {
 		ResponseMessage msg = new ResponseMessage();
+		
+		if (!isValidEmailAddress(article.getEmail())) {
+			msg.setStatus("fail");
+			msg.setMessage("Invalid Email Address!");
+			return msg;
+		}
     			
 	    try {
 	        Context initCtx = new InitialContext();
@@ -127,5 +132,12 @@ public class ArticleController {
 	@RequestMapping(value="/{no}", method=RequestMethod.GET)
 	public String getArticle(@PathVariable int name) {
 		return null;
+	}
+	
+	public boolean isValidEmailAddress(String email) {
+		String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+		java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+		java.util.regex.Matcher m = p.matcher(email);
+		return m.matches();
 	}
 }

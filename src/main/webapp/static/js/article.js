@@ -11,7 +11,7 @@ function Article() {
 	};
 	
 	this.setBody = function(body) {
-		this.body = body.replace(/\n/g, "<br />");
+		this.body = body;
 	};
 	
 	this.setPassword = function(password) {
