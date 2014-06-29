@@ -67,7 +67,7 @@
             </a>
             <div class="media-body article">
               <div class="article-head">
-                <h4 class="media-heading">{{article.name}} <span class="article-time">{{article.regtime}}</span></h4>
+                <h4 class="media-heading">{{article.email}} <span class="article-time">{{article.regtime}}</span></h4>
               </div>
               <div class="article-body">
               <p>{{article.body}}</p>

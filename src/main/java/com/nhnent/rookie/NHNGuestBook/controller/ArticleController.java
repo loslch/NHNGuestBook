@@ -71,7 +71,7 @@ public class ArticleController {
 	public @ResponseBody ResponseMessage postArticle(@RequestBody final Article article) {
 		ResponseMessage msg = new ResponseMessage();
 		msg.setStatus("success");
-		msg.setMessage("Your Message has been successfully submitted.");
+		msg.setMessage("Your message has been successfully submitted.");
 		
 		return msg;
 	}
