@@ -33,34 +33,34 @@
         <h1 class="text-center">Hun's Guest Book</h1>
         <hr>
         
-        <form action="/article" method="post" role="form" class="">
-          <div class="share">
-            <div class="arrow"></div>
-            <div class="panel panel-default">
-              <div class="panel-body">
-                <div class="form-group col-md-8" style="padding-left: 0px">
-                  <input type="email" name="email" placeholder="Email" class="form-control" autofocus>
-                </div>
-                <div class="form-group col-md-4" style="padding-right: 0px">
-                  <input type="password" name="password" placeholder="Password" class="form-control">
-                </div>
-                <div class="form-group">
-                  <textarea name="body" rows="3" class="form-control message" placeholder="Leave your message!"></textarea>
-                </div>
+        <form role="form" class="" ng-controller="articleCtrl">
+        <div class="share">
+          <div class="arrow"></div>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="form-group col-md-8" style="padding-left: 0px">
+                <input type="email" name="email" placeholder="Email" class="form-control" autofocus ng-model="email">
               </div>
-              <div class="panel-footer">
-                <div class="row">
-                  <div class="col-md-12">
-                    <input type="submit" name="submit" value="Post" class="btn btn-primary pull-right">
-                  </div>
+              <div class="form-group col-md-4" style="padding-right: 0px">
+                <input type="password" name="password" placeholder="Password" class="form-control" ng-model="password">
+              </div>
+              <div class="form-group">
+                <textarea name="body" rows="3" class="form-control message" placeholder="Leave your message!" ng-model="body"></textarea>
+              </div>
+            </div>
+            <div class="panel-footer">
+              <div class="row">
+                <div class="col-md-12">
+                  <button class="btn btn-primary pull-right" ng-click="postArticle()">Post</button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
         </form>
         <hr>
         
-        <ul class="media-list" ng-controller="articlesController">
+        <ul class="media-list" ng-controller="articleCtrl">
           <li class="media" ng-repeat="article in articles">
             <a class="pull-left" href="{{article.email}}">
               <img class="media-object article-author" src="http://placehold.it/64x64" alt="...">
@@ -70,7 +70,7 @@
                 <h4 class="media-heading">{{article.email}} <span class="article-time">{{article.regtime}}</span></h4>
               </div>
               <div class="article-body">
-              <p>{{article.body}}</p>
+              <p ng-bind-html="article.body | nohtml | newlines | unsafe"></p>
               </div>
             </div>
           </li>
@@ -79,6 +79,7 @@
     </div>
   </div>
   
+  <script src="<c:url value="/static/js/article.js" />"></script>
   <script src="<c:url value="/static/js/app.js" />"></script>
 </body>
 </html>

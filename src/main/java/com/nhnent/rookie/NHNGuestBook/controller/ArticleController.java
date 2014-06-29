@@ -1,7 +1,9 @@
 package com.nhnent.rookie.NHNGuestBook.controller;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +25,25 @@ import com.nhnent.rookie.NHNGuestBook.model.ResponseMessage;
 @Controller
 @RequestMapping(value = "/article")
 public class ArticleController {
-    Statement stmt = null;
-    ResultSet rs = null;
-    Connection conn = null;
+	private PreparedStatement pstmt = null;
+	private ResultSet rs = null;
+	private Connection conn = null;
+    
+    private final String selectAllSQL =
+    	"SELECT [no], email, body, regtime, modtime "
+    	+ "FROM articles;";
+    private final String selectOneSQL = 
+    	"SELECT [no], email, body, regtime, modtime "
+    	+ "FROM articles "
+    	+ "WHERE [no] = ?;";
+    private final String insertSQL =
+		"INSERT INTO articles "
+    	+ "( [no], email, [password], body, regtime, modtime ) VALUES " 
+		+ "( NULL, ?, MD5(?), ?, NOW(), NOW() );";
+    private final String updateSQL =
+        "UPDATE articles SET "
+        + "[no]=?, email='?', [password]=MD5('?'), body='?', modtime=NOW() "
+        + "WHERE [no]=? and [password]=MD5('?');";
     
 	@RequestMapping(method=RequestMethod.GET)
 	public @ResponseBody ResponseMessage getArticles() {
@@ -35,12 +53,11 @@ public class ArticleController {
 	    try {
 	        Context initCtx = new InitialContext();
 	        Context envCtx = (Context)initCtx.lookup("java:/comp/env");
-	        DataSource ds = (DataSource)envCtx.lookup("jdbc/CUBRIDDS");        
+	        DataSource ds = (DataSource)envCtx.lookup("jdbc/CUBRIDDS");
 	        conn = ds.getConnection();
 	        
-	        String sQuery = "select [no], email, body, regtime, modtime from articles";
-	        stmt = conn.createStatement();
-	        rs = stmt.executeQuery(sQuery);
+	        pstmt = conn.prepareStatement(selectAllSQL);
+	        rs = pstmt.executeQuery();
 	        
 			while (rs.next()) {
 				Article article = new Article();
@@ -60,7 +77,7 @@ public class ArticleController {
 			msg.setMessage("Something went wrong!");
 	    } finally {
 	        if (rs != null) try {rs.close(); } catch (Exception ex2) {}
-	        if (stmt != null) try {stmt.close(); } catch (Exception ex3) {}
+	        if (pstmt != null) try {pstmt.close(); } catch (Exception ex3) {}
 	        if (conn != null) try {conn.close(); } catch (Exception ex4) {}
 	    }
 		
@@ -70,8 +87,39 @@ public class ArticleController {
 	@RequestMapping(method=RequestMethod.POST)
 	public @ResponseBody ResponseMessage postArticle(@RequestBody final Article article) {
 		ResponseMessage msg = new ResponseMessage();
-		msg.setStatus("success");
-		msg.setMessage("Your message has been successfully submitted.");
+    			
+	    try {
+	        Context initCtx = new InitialContext();
+	        Context envCtx = (Context)initCtx.lookup("java:/comp/env");
+	        DataSource ds = (DataSource)envCtx.lookup("jdbc/CUBRIDDS");        
+	        conn = ds.getConnection();
+	        conn.setAutoCommit(false);
+	        
+	        pstmt = conn.prepareStatement(insertSQL);
+	        pstmt.setString(1, article.getEmail());
+	        pstmt.setString(2, article.getPassword());
+	        pstmt.setString(3, article.getBody());
+	        pstmt.executeUpdate();
+	        conn.commit();
+
+			msg.setStatus("success");
+			msg.setMessage("Your message has been successfully submitted.");
+	    } catch(Exception ex) {
+	        ex.printStackTrace();
+			msg.setStatus("fail");
+			msg.setMessage("Something went wrong!");
+	        if (conn != null) {
+	            try {
+	                System.err.println("Transaction is being rolled back");
+	                conn.rollback();
+	            } catch(SQLException excep) {}
+	        }
+	    } finally {
+	        if (rs != null) try {rs.close(); } catch (Exception ex2) {}
+	        if (pstmt != null) try {pstmt.close(); } catch (Exception ex3) {}
+	        if (conn != null) try {conn.setAutoCommit(true); conn.close(); }
+	        catch (Exception ex4) {}
+	    }
 		
 		return msg;
 	}
