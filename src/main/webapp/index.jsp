@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Hun's Guest Book</title>
   
   <!-- Bootstrap -->
@@ -39,8 +39,8 @@
         
         <ul class="media-list" ng-controller="articleCtrl">
           <li class="media" ng-repeat="article in articles">
-            <a class="pull-left" href="{{article.email}}">
-              <img class="media-object article-author" src="http://www.gravatar.com/avatar/{{article.email | md5}}?d=mm&s=64" alt="...">
+            <a class="pull-left">
+              <img class="media-object article-author" src="http://www.gravatar.com/avatar/{{article.email | md5}}?d=mm&s=64">
             </a>
             <div class="media-body article">
               <div class="article-head">
@@ -66,10 +66,10 @@
           <div class="arrow"></div>
           <div class="panel panel-default">
             <div class="panel-body">
-              <div class="form-group col-md-8" style="padding-left: 0px">
+              <div class="form-group col-md-8 email-form">
                 <input type="email" name="email" placeholder="Email" class="form-control" autofocus ng-model="email" required>
               </div>
-              <div class="form-group col-md-4" style="padding-right: 0px">
+              <div class="form-group col-md-4 password-form">
                 <input type="password" name="password" placeholder="Password" class="form-control" ng-model="password" required>
               </div>
               <div class="form-group">
@@ -93,10 +93,10 @@
           <div class="arrow"></div>
           <div class="panel panel-default">
             <div class="panel-body">
-              <div class="form-group col-md-8" style="padding-left: 0px">
+              <div class="form-group col-md-8 email-form">
                 <input type="email" name="email" placeholder="Email" class="form-control" autofocus ng-model="email" required>
               </div>
-              <div class="form-group col-md-4" style="padding-right: 0px">
+              <div class="form-group col-md-4 password-form">
                 <input type="password" name="password" placeholder="Password" class="form-control" ng-model="password" required>
               </div>
               <div class="form-group">

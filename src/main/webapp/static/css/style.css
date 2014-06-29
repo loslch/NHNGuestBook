@@ -7,6 +7,25 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+@media only screen 
+and (max-device-width : 640px) {
+.email-form {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.password-form {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+}
+
+.email-form {
+    padding-left: 0px;
+}
+.password-form {
+    padding-right: 0px;
+}
+
 .article-author {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
