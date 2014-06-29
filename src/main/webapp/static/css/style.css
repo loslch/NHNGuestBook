@@ -1,6 +1,10 @@
 body {
     padding-top: 10px;
     padding-bottom: 20px;
+	font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Dotum, Helvetica, Arial, Verdana, sans-serif;
+	background-color: transparent;
+	color: #333;
+    -webkit-font-smoothing: antialiased;
 }
 
 .article-author {
@@ -9,10 +13,14 @@ body {
     border-radius: 3px;
 }
 
-.article-time {
+.article-head .article-time {
     font-size: 11px;
     color: #636363;
     font-style: italic;
+}
+
+.article-head .article-modify {
+    font-size: 10px;
 }
 
 .article-body {

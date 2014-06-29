@@ -24,7 +24,6 @@ import com.nhnent.rookie.NHNGuestBook.model.ResponseMessage;
 @Controller
 @RequestMapping(value = "/article")
 public class ArticleController {
-	private PreparedStatement pstmt = null;
 	private ResultSet rs = null;
 	private Connection conn = null;
     
@@ -41,11 +40,12 @@ public class ArticleController {
 		+ "( NULL, ?, MD5(?), ?, NOW(), NOW() );";
     private final String updateSQL =
         "UPDATE articles SET "
-        + "[no]=?, email='?', [password]=MD5('?'), body='?', modtime=NOW() "
-        + "WHERE [no]=? and [password]=MD5('?');";
+        + "email=?, body=?, modtime=NOW() "
+        + "WHERE [no]=? and [password]=MD5(?);";
     
 	@RequestMapping(method=RequestMethod.GET)
 	public @ResponseBody ResponseMessage getArticles() {
+    	PreparedStatement pstmt = null;
 		ResponseMessage msg = new ResponseMessage();
     	List<Article> articles = new ArrayList<Article>();
     			
@@ -54,7 +54,7 @@ public class ArticleController {
 	        Context envCtx = (Context)initCtx.lookup("java:/comp/env");
 	        DataSource ds = (DataSource)envCtx.lookup("jdbc/CUBRIDDS");
 	        conn = ds.getConnection();
-	        
+
 	        pstmt = conn.prepareStatement(selectAllSQL);
 	        rs = pstmt.executeQuery();
 	        
@@ -85,6 +85,7 @@ public class ArticleController {
 
 	@RequestMapping(method=RequestMethod.POST)
 	public @ResponseBody ResponseMessage postArticle(@RequestBody final Article article) {
+    	PreparedStatement pstmt = null;
 		ResponseMessage msg = new ResponseMessage();
 		
 		if (!isValidEmailAddress(article.getEmail())) {
@@ -99,7 +100,7 @@ public class ArticleController {
 	        DataSource ds = (DataSource)envCtx.lookup("jdbc/CUBRIDDS");        
 	        conn = ds.getConnection();
 	        conn.setAutoCommit(false);
-	        
+
 	        pstmt = conn.prepareStatement(insertSQL);
 	        pstmt.setString(1, article.getEmail());
 	        pstmt.setString(2, article.getPassword());
@@ -129,9 +130,98 @@ public class ArticleController {
 		return msg;
 	}
 
-	@RequestMapping(value="/{no}", method=RequestMethod.GET)
-	public String getArticle(@PathVariable int name) {
-		return null;
+	@RequestMapping(value="/{articleNo}", method=RequestMethod.GET)
+	public @ResponseBody ResponseMessage getArticle(@PathVariable final int articleNo) {
+    	PreparedStatement pstmt = null;
+		ResponseMessage msg = new ResponseMessage();
+    	List<Article> articles = new ArrayList<Article>();
+    			
+	    try {
+	        Context initCtx = new InitialContext();
+	        Context envCtx = (Context)initCtx.lookup("java:/comp/env");
+	        DataSource ds = (DataSource)envCtx.lookup("jdbc/CUBRIDDS");
+	        conn = ds.getConnection();
+
+	        pstmt = conn.prepareStatement(selectOneSQL);
+	        pstmt.setInt(1, articleNo);
+	        rs = pstmt.executeQuery();
+	        
+			while (rs.next()) {
+				Article article = new Article();
+				article.setNo(rs.getLong(1));
+				article.setEmail(rs.getString(2));
+				article.setBody(rs.getString(3));
+				article.setRegtime(rs.getTimestamp(4));
+				article.setModtime(rs.getTimestamp(5));
+				articles.add(article);
+			}
+
+			msg.setStatus("success");
+			msg.setArticles(articles);
+	    } catch(Exception ex) {
+	        ex.printStackTrace();
+			msg.setStatus("fail");
+			msg.setMessage("Something went wrong!");
+	    } finally {
+	        if (rs != null) try {rs.close(); } catch (Exception ex2) {}
+	        if (pstmt != null) try {pstmt.close(); } catch (Exception ex3) {}
+	        if (conn != null) try {conn.close(); } catch (Exception ex4) {}
+	    }
+		
+		return msg;
+	}
+
+	@RequestMapping(value="/{articleNo}", method=RequestMethod.POST)
+	public @ResponseBody ResponseMessage modifyArticle(@PathVariable final int articleNo, @RequestBody final Article article) {
+    	PreparedStatement pstmt = null;
+		ResponseMessage msg = new ResponseMessage();
+		
+		if (!isValidEmailAddress(article.getEmail())) {
+			msg.setStatus("fail");
+			msg.setMessage("Invalid Email Address!");
+			return msg;
+		}
+    			
+	    try {
+	        Context initCtx = new InitialContext();
+	        Context envCtx = (Context)initCtx.lookup("java:/comp/env");
+	        DataSource ds = (DataSource)envCtx.lookup("jdbc/CUBRIDDS");        
+	        conn = ds.getConnection();
+	        conn.setAutoCommit(false);
+
+	        pstmt = conn.prepareStatement(updateSQL);
+	        pstmt.setString(1, article.getEmail());
+	        pstmt.setString(2, article.getBody());
+	        pstmt.setLong(3, article.getNo());
+	        pstmt.setString(4, article.getPassword());
+	        int result = pstmt.executeUpdate();
+	        conn.commit();
+
+	        if (result == 1) {
+				msg.setStatus("success");
+				msg.setMessage("Your message has been successfully modified.");
+	        } else {
+				msg.setStatus("fail");
+				msg.setMessage("It's wrong password.");
+	        }
+	    } catch(Exception ex) {
+	        ex.printStackTrace();
+			msg.setStatus("fail");
+			msg.setMessage("Something went wrong!");
+	        if (conn != null) {
+	            try {
+	                System.err.println("Transaction is being rolled back");
+	                conn.rollback();
+	            } catch(SQLException excep) {}
+	        }
+	    } finally {
+	        if (rs != null) try {rs.close(); } catch (Exception ex2) {}
+	        if (pstmt != null) try {pstmt.close(); } catch (Exception ex3) {}
+	        if (conn != null) try {conn.setAutoCommit(true); conn.close(); }
+	        catch (Exception ex4) {}
+	    }
+		
+		return msg;
 	}
 	
 	public boolean isValidEmailAddress(String email) {

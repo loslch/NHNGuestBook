@@ -6,6 +6,10 @@ function Article() {
 	this.regtime = null;
 	this.modtime = null;
 	
+	this.setNo = function(no) {
+		this.no = no;
+	};
+	
 	this.setEmail = function(email) {
 		this.email = email;
 	};

@@ -197,7 +197,7 @@ public class Article implements Serializable {
 	 */
 	public String getModtime() {
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return ft.format(regtime);
+		return ft.format(modtime);
 	}
 
 	/**
