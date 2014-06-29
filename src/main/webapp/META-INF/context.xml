@@ -7,7 +7,7 @@
        auth="Container"
        type="javax.sql.DataSource"
        driverClassName="cubrid.jdbc.driver.CUBRIDDriver"
-       url="jdbc:cubrid:localhost:30000:guestbook:::"
+       url="jdbc:cubrid:localhost:30000:guestbook:::?charset=utf-8"
        username="dba"
        password="1234"
        maxActive="20"
